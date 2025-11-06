@@ -42,6 +42,19 @@
             margin-top: 0;
         }
 
+        /* --- Player Stats --- */
+        #player-stats {
+            text-align: right;
+            margin-bottom: 20px;
+            padding: 5px 10px;
+            background-color: #1a1a1a;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         /* --- Story Output --- */
         #story-output {
             margin-bottom: 30px;
@@ -94,6 +107,9 @@
             <h1>Warriors: The Founding</h1>
         </header>
 
+        <aside id="player-stats">
+        </aside>
+
         <section id="story-output">
             </section>
 
@@ -102,6 +118,12 @@
     </main>
 
     <script>
+        // --- GAME STATE ---
+        const gameState = {
+            respect: 0,
+            recruits: []
+        };
+
         // --- GAME DATA ---
         // This object holds all the story "nodes".
         // Each key is a unique ID for a scene.
@@ -128,9 +150,9 @@
                     <p>He's right. Sal is watching you, waiting. Vermin is ready to bust him up.</p>
                 `,
                 choices: [
-                    { text: "[MUSCLE] \"I don't care. You pay *us*. Now.\"", target: 'scene_1_muscle' },
-                    { text: "[SMARTS] \"This is Virgil's problem. Let's go.\"", target: 'scene_1_smarts' },
-                    { text: "[VISION] \"The Destroyers are finished. You pay *us* now.\"", target: 'scene_1_vision' }
+                    { text: "[MUSCLE] \"I don't care. You pay *us*. Now.\"", target: 'scene_1_muscle', action: () => gameState.respect += 5 },
+                    { text: "[SMARTS] \"This is Virgil's problem. Let's go.\"", target: 'scene_1_smarts', action: () => gameState.respect += 2 },
+                    { text: "[VISION] \"The Destroyers are finished. You pay *us* now.\"", target: 'scene_1_vision', action: () => gameState.respect += 3 }
                 ]
             },
             
@@ -162,7 +184,7 @@
                     <p>You tell him the name: <strong>The Warriors</strong>.</p>
                 `,
                 choices: [
-                    { text: "Let's find a real base.", target: 'scene_2_hangout' }
+                    { text: "Let's find a real base.", target: 'scene_2_soldiers' }
                 ]
             },
 
@@ -176,7 +198,7 @@
                     <p><strong>You:</strong> "Not yet. But we will be. I'm done with Virgil. We're starting our own set. We're gonna be called <strong>The Warriors</strong>."</p>
                 `,
                 choices: [
-                    { text: "He's right. First, we need a base.", target: 'scene_2_hangout' }
+                    { text: "He's right. First, we need soldiers.", target: 'scene_2_soldiers' }
                 ]
             },
 
@@ -186,22 +208,19 @@
                     <p>You and Vermin scout the new location. It's perfect. Empty, defensible, and all your own.</p>
                     <p>You've got a hangout. You've got a name. But a set of two ain't no set at all. You need to build your ` + '`RESPECT`' + ` and find more soldiers.</p>
                     <p><strong>OBJECTIVE:</strong> Recruit new members.</p>
-                    <p><strong>[TO BE CONTINUED...]</strong></p>
                 `,
                 choices: [
-                    { text: "Restart the game.", target: 'start' }
-                ]
+                    { text: "Time to find some soldiers.", target: 'scene_2_soldiers' }
+                ],
             },
             'scene_2_soldiers': {
                 text: `
                     <p>You and Vermin hit the streets. You can't build a set without soldiers. You need muscle, you need smarts, and you need loyalty.</p>
                     <p>You hear chatter about a few lone wolves... a brawler named <strong>Ajax</strong>... a quiet type they call <strong>Swan</strong>... and a kid with a spray can, <strong>Rembrandt</strong>.</p>
                     <p><strong>OBJECTIVE:</strong> Recruit your first soldiers.</p>
-                    <p><strong>[TO BE CONTINUED...]</strong></p>
                 `,
                 choices: [
-                    { text: "Approach Ajax in the arcade.", target: 'scene_3_recruit_ajax' },
-                    { text: "Restart the game.", target: 'start' }
+                    { text: "Approach Ajax in the arcade.", target: 'scene_3_recruit_ajax' }
                 ]
             },
             'scene_3_recruit_ajax': {
@@ -211,9 +230,9 @@
                     <p>Vermin whispers: "This guy's trouble, Cleon. But damn, we could use that strength."</p>
                 `,
                 choices: [
-                    { text: "[MUSCLE] Challenge him to a fight—show him who's boss.", target: 'scene_3_ajax_fight' },
-                    { text: "[SMARTS] Talk him down: 'We're building something big. You in?'", target: 'scene_3_ajax_talk' },
-                    { text: "[VISION] Appeal to his ego: 'Warriors need a real fighter like you.'", target: 'scene_3_ajax_ego' }
+                    { text: "[MUSCLE] Challenge him to a fight—show him who's boss.", target: 'scene_3_ajax_fight', action: () => { gameState.respect += 10; gameState.recruits.push('Ajax'); } },
+                    { text: "[SMARTS] Talk him down: 'We're building something big. You in?'", target: 'scene_3_ajax_talk', action: () => { gameState.respect += 5; gameState.recruits.push('Ajax'); } },
+                    { text: "[VISION] Appeal to his ego: 'Warriors need a real fighter like you.'", target: 'scene_3_ajax_ego', action: () => { gameState.respect += 7; gameState.recruits.push('Ajax'); } }
                 ]
             },
 
@@ -224,10 +243,10 @@
                     <p><strong>Ajax:</strong> "Alright, alright! You're tough. What the hell you want?"</p>
                     <p>You explain the Warriors. He laughs: "Sounds like fun. I'm in—if I get to crack skulls."</p>
                     <p><strong>GAINED:</strong> Ajax joins the crew. Your muscle just got serious.</p>
-                    <p><strong>[TO BE CONTINUED: Next recruit?]</strong></p>
                 `,
                 choices: [
-                    { text: "Head back to the hangout.", target: 'scene_4_hangout_build' }
+                    { text: "Head back to the hangout.", target: 'scene_4_hangout_build' },
+                    { text: "Let's make some noise on the street.", target: 'scene_4_street_respect' }
                 ]
             },
 
@@ -238,10 +257,10 @@
                     <p>Vermin chimes in: "Because alone, you're just breaking machines. With us, you'll break rival sets."</p>
                     <p>He thinks, then nods. "Fine. But if it's boring, I'm out."</p>
                     <p><strong>GAINED:</strong> Ajax joins... reluctantly.</p>
-                    <p><strong>[TO BE CONTINUED: Next recruit?]</strong></p>
                 `,
                 choices: [
-                    { text: "Head back to the hangout.", target: 'scene_4_hangout_build' }
+                    { text: "Head back to the hangout.", target: 'scene_4_hangout_build' },
+                    { text: "Let's make some noise on the street.", target: 'scene_4_street_respect' }
                 ]
             },
 
@@ -250,10 +269,10 @@
                     <p>You smile. "We see you, Ajax. Toughest guy in Coney. But wasting it on pinball? Join the Warriors—we'll make you a legend."</p>
                     <p>His eyes light up. "Legend, huh? Yeah... I like the sound of that. Count me in."</p>
                     <p><strong>GAINED:</strong> Ajax joins, pumped up.</p>
-                    <p><strong>[TO BE CONTINUED: Next recruit?]</strong></p>
                 `,
                 choices: [
-                    { text: "Head back to the hangout.", target: 'scene_4_hangout_build' }
+                    { text: "Head back to the hangout.", target: 'scene_4_hangout_build' },
+                    { text: "Let's make some noise on the street.", target: 'scene_4_street_respect' }
                 ]
             },
 
@@ -261,19 +280,50 @@
                 text: `
                     <p>Back at the hangout, Ajax is already flexing and talking big. Vermin rolls his eyes, but the crew's growing. Next up: Scout for Swan or hit the streets for respect.</p>
                     <p><strong>OBJECTIVE:</strong> Solidify the gang.</p>
-                    <p><strong>[TO BE CONTINUED...]</strong></p>
                 `,
                 choices: [
+                    { text: "Let's make some noise on the street.", target: 'scene_4_street_respect' },
                     { text: "Restart the game.", target: 'start' }
+                ]
+            },
+
+            'scene_4_street_respect': {
+                text: `
+                    <p>You take your new crew out to make a name for yourselves. You run into a few of Virgil's boys from The Destroyers trying to shake down a vendor.</p>
+                    <p>They see you, Ajax, and Vermin. They're outnumbered and they know it.</p>
+                `,
+                choices: [
+                    { text: "Stare them down. Let them walk.", target: 'respect_check_1', condition: () => gameState.respect >= 10 },
+                    { text: "Tell them to get lost. This is our turf now.", target: 'respect_check_1' }
+                ]
+            },
+
+            'respect_check_1': {
+                text: `
+                    <p>The Destroyers back off, muttering under their breath. The vendor nods at you, grateful.</p>
+                    <p>Your name is getting out. People are seeing that The Warriors are for real.</p>
+                    <p><strong>[TO BE CONTINUED: Recruit Swan or Rembrandt?]</strong></p>
+                `,
+                choices: [
+                    { text: "Restart for now.", target: 'start' }
+                ]
+            },
+            'respect_check_1_fail': {
+                text: `
+                    <p>They laugh. "You ain't nothin'!" One of them shoves you. Ajax immediately starts a brawl.</p>
+                    <p>You win the fight, but it was messy. You haven't earned their fear yet. You need more respect.</p>
+                    <p><strong>[TO BE CONTINUED: Recruit Swan or Rembrandt?]</strong></p>
+                `,
+                choices: [
+                    { text: "Restart for now.", target: 'start' }
                 ]
             }
         };
 
         // --- GAME ENGINE ---
-        
-        // Get the DOM elements
         const storyOutput = document.getElementById('story-output');
         const choicesContainer = document.getElementById('choices-container');
+        const statsDisplay = document.getElementById('player-stats');
 
         /**
          * Displays a scene by its ID.
@@ -281,6 +331,9 @@
          */
         function displayScene(sceneKey) {
             const scene = gameData[sceneKey];
+
+            // Update the stats display
+            updateStats();
 
             if (!scene) {
                 console.error(`Scene not found: ${sceneKey}`);
@@ -295,16 +348,38 @@
 
             // 3. Create and add new choice buttons
             scene.choices.forEach(choice => {
+                // Conditional choices: if a condition exists and it's false, don't show the choice.
+                if (choice.condition && !choice.condition()) {
+                    // If there's a failure target, create a disabled-looking choice that leads there.
+                    if (choice.failTarget) {
+                        const button = document.createElement('button');
+                        button.innerText = choice.text;
+                        button.disabled = true; // Make it unclickable
+                        button.style.textDecoration = 'line-through';
+                        button.style.cursor = 'not-allowed';
+                        choicesContainer.appendChild(button);
+                    }
+                    return; // Skip adding the real choice
+                }
+
                 const button = document.createElement('button');
                 button.innerText = choice.text;
                 
                 // Add an event listener to go to the target scene when clicked
                 button.addEventListener('click', () => {
+                    // If the choice has an action, execute it.
+                    if (choice.action) {
+                        choice.action();
+                    }
                     displayScene(choice.target);
                 });
                 
                 choicesContainer.appendChild(button);
             });
+        }
+
+        function updateStats() {
+            statsDisplay.innerHTML = `RESPECT: ${gameState.respect}`;
         }
 
         // --- START THE GAME ---
