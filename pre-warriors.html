@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warriors: The Founding</title>
+    
+    <style>
+        /* --- Basic Setup --- */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
+            color: #eee;
+            margin: 0;
+            padding: 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        /* --- Game Container --- */
+        #game-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid #800;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #f90; /* Gritty Orange/Yellow */
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-top: 0;
+        }
+
+        /* --- Story Output --- */
+        #story-output {
+            margin-bottom: 30px;
+            background-color: #111;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 3px solid #f90;
+        }
+
+        #story-output p {
+            margin: 0 0 15px;
+        }
+
+        #story-output p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* --- Choices (Buttons) --- */
+        #choices-container button {
+            display: block;
+            width: 100%;
+            padding: 18px 20px;
+            margin: 10px 0;
+            
+            background-color: #222;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 5px;
+            
+            font-size: 1em;
+            text-align: left;
+            cursor: pointer;
+            
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        #choices-container button:hover,
+        #choices-container button:focus {
+            background-color: #f90;
+            color: #000;
+            border-color: #f90;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <main id="game-container">
+        <header>
+            <h1>Warriors: The Founding</h1>
+        </header>
+
+        <section id="story-output">
+            </section>
+
+        <nav id="choices-container">
+            </nav>
+    </main>
+
+    <script>
+        // --- GAME DATA ---
+        // This object holds all the story "nodes".
+        // Each key is a unique ID for a scene.
+        // 'text' is the story text (use <p> tags for paragraphs).
+        // 'choices' is an array of options.
+        // 'target' is the ID of the scene that choice leads to.
+        const gameData = {
+            'start': {
+                text: `
+                    <p><strong>CONEY ISLAND, 1978.</strong></p>
+                    <p>You are <strong>Cleon</strong>. Right now, that name doesn't mean much. You're just a soldier in <strong>The Destroyers</strong>, the set that runs Coney.</p>
+                    <p>But the machine is broken. Your leader, Virgil, is erratic and weak. You and your best friend, Vermin, are on a garbage mission: shaking down a local bodega owner, Old Man Sal.</p>
+                `,
+                choices: [
+                    { text: "Get this over with.", target: 'scene_1_shakedown' }
+                ]
+            },
+            'scene_1_shakedown': {
+                text: `
+                    <p>The bodega's bell rings. Old Man Sal is behind the counter, his face pale.</p>
+                    <p><strong>You:</strong> "Sal. You're late."</p>
+                    <p><strong>Sal:</strong> "I paid! I paid this morning. The big guy... 'Tiny'! He came by at noon, said he was collecting for Virgil!"</p>
+                    <p>Vermin looks at you, disgusted. "Tiny? That bum is skinnin' his own set? This whole gang is rotten."</p>
+                    <p>He's right. Sal is watching you, waiting. Vermin is ready to bust him up.</p>
+                `,
+                choices: [
+                    { text: "[MUSCLE] \"I don't care. You pay *us*. Now.\"", target: 'scene_1_muscle' },
+                    { text: "[SMARTS] \"This is Virgil's problem. Let's go.\"", target: 'scene_1_smarts' },
+                    { text: "[VISION] \"The Destroyers are finished. You pay *us* now.\"", target: 'scene_1_vision' }
+                ]
+            },
+            
+            // --- BRANCH 1: SMARTS (The Canon Path) ---
+            'scene_1_smarts': {
+                text: `
+                    <p>You hold up a hand to Vermin. "This ain't his fault. This is Virgil's mess. We're done here."</p>
+                    <p>You walk out. The bell rings. Vermin follows, catching up under a flickering lamppost.</p>
+                    <p><strong>Vermin:</strong> "You just walked out! Virgil's gonna go psycho. He'll have our vests for that!"</p>
+                    <p><strong>You:</strong> "Let him try. I'm done takin' orders from that chump. The Destroyers are dead, Vermin. They just don't know it yet."</p>
+                    <p>Vermin is quiet. "So what're we gonna do? Just... quit?"</p>
+                    <p><strong>You:</strong> "No. We're gonna start our own. Something real. Something *solid*. I read this book... about these Greeks. They were the toughest. They were called <strong>The Warriors</strong>."</p>
+                    <p>Vermin grins. "'The Warriors.' ...Yeah. I like that. So, Warlord... what's the first move?"</p>
+                `,
+                choices: [
+                    { text: "[EXPLORE] \"We need a base. Let's check that abandoned factory.\"", target: 'scene_2_hangout' },
+                    { text: "[EXPLORE] \"The old bathhouse on the beach is boarded up. Perfect.\"", target: 'scene_2_hangout' },
+                    { text: "[CHATTER] \"First, we need soldiers. Let's see who else is sick of Virgil.\"", target: 'scene_2_soldiers' }
+                ]
+            },
+            
+            // --- BRANCH 2: MUSCLE ---
+            'scene_1_muscle': {
+                text: `
+                    <p>You slam your fist on the counter. "I don't care who you paid. You pay US."</p>
+                    <p>Sal flinches and empties the register. It's barely thirty bucks. You snatch the cash and walk out.</p>
+                    <p><strong>Vermin:</strong> "See? Easy." But you feel like a chump. Shaking down an old man for pocket change. This is what The Destroyers have become.</p>
+                    <p><strong>You:</strong> "This is the last time. I'm done. We're starting our own set. Something real."</p>
+                    <p>You tell him the name: <strong>The Warriors</strong>.</p>
+                `,
+                choices: [
+                    { text: "Let's find a real base.", target: 'scene_2_hangout' }
+                ]
+            },
+
+            // --- BRANCH 3: VISION ---
+            'scene_1_vision': {
+                text: `
+                    <p>You lean in close. "The Destroyers are finished. From now on, you pay *us*."</p>
+                    <p>Sal just looks confused. "Pay... *who*? You're Destroyers!"</p>
+                    <p>Vermin yanks you by the arm. "Cleon, you gone crazy? Let's go!" He drags you outside.</p>
+                    <p><strong>Vermin:</strong> "What was that? You can't just... *say* it! We ain't nothin' yet!"</p>
+                    <p><strong>You:</strong> "Not yet. But we will be. I'm done with Virgil. We're starting our own set. We're gonna be called <strong>The Warriors</strong>."</p>
+                `,
+                choices: [
+                    { text: "He's right. First, we need a base.", target: 'scene_2_hangout' }
+                ]
+            },
+
+            // --- CONTINUATION SCENES (Stubs) ---
+            'scene_2_hangout': {
+                text: `
+                    <p>You and Vermin scout the new location. It's perfect. Empty, defensible, and all your own.</p>
+                    <p>You've got a hangout. You've got a name. But a set of two ain't no set at all. You need to build your ` + '`RESPECT`' + ` and find more soldiers.</p>
+                    <p><strong>OBJECTIVE:</strong> Recruit new members.</p>
+                    <p><strong>[TO BE CONTINUED...]</strong></p>
+                `,
+                choices: [
+                    { text: "Restart the game.", target: 'start' }
+                ]
+            },
+            'scene_2_soldiers': {
+                text: `
+                    <p>You and Vermin hit the streets. You can't build a set without soldiers. You need muscle, you need smarts, and you need loyalty.</p>
+                    <p>You hear chatter about a few lone wolves... a brawler named <strong>Ajax</strong>... a quiet type they call <strong>Swan</strong>... and a kid with a spray can, <strong>Rembrandt</strong>.</p>
+                    <p><strong>OBJECTIVE:</strong> Recruit your first soldiers.</p>
+                    <p><strong>[TO BE CONTINUED...]</strong></p>
+                `,
+                choices: [
+                    { text: "Approach Ajax in the arcade.", target: 'scene_3_recruit_ajax' },
+                    { text: "Restart the game.", target: 'start' }
+                ]
+            },
+            'scene_3_recruit_ajax': {
+                text: `
+                    <p>You spot <strong>Ajax</strong> in a rundown arcade, smashing a pinball machine after a bad score. He's built like a tank, fists like hammers—perfect muscle for the Warriors. But word is he's a loose cannon, always picking fights.</p>
+                    <p>He notices you and Vermin. <strong>Ajax:</strong> "What're you clowns staring at? This joint's my spot. Beat it before I rearrange your faces."</p>
+                    <p>Vermin whispers: "This guy's trouble, Cleon. But damn, we could use that strength."</p>
+                `,
+                choices: [
+                    { text: "[MUSCLE] Challenge him to a fight—show him who's boss.", target: 'scene_3_ajax_fight' },
+                    { text: "[SMARTS] Talk him down: 'We're building something big. You in?'", target: 'scene_3_ajax_talk' },
+                    { text: "[VISION] Appeal to his ego: 'Warriors need a real fighter like you.'", target: 'scene_3_ajax_ego' }
+                ]
+            },
+
+            'scene_3_ajax_fight': {
+                text: `
+                    <p>You step up, fists ready. "Let's see what you got, big man."</p>
+                    <p>Ajax grins and swings. It's a brutal scrap—punches fly, machines tip over. You hold your own, but he's relentless. Finally, you pin him against the wall.</p>
+                    <p><strong>Ajax:</strong> "Alright, alright! You're tough. What the hell you want?"</p>
+                    <p>You explain the Warriors. He laughs: "Sounds like fun. I'm in—if I get to crack skulls."</p>
+                    <p><strong>GAINED:</strong> Ajax joins the crew. Your muscle just got serious.</p>
+                    <p><strong>[TO BE CONTINUED: Next recruit?]</strong></p>
+                `,
+                choices: [
+                    { text: "Head back to the hangout.", target: 'scene_4_hangout_build' }
+                ]
+            },
+
+            'scene_3_ajax_talk': {
+                text: `
+                    <p>You keep cool. "Easy, man. We're not here to rumble. We're starting a new set—The Warriors. Virgil's crew is weak; we need real soldiers like you."</p>
+                    <p>Ajax snorts. "Talk's cheap. Why should I ditch my solo gig for you bums?"</p>
+                    <p>Vermin chimes in: "Because alone, you're just breaking machines. With us, you'll break rival sets."</p>
+                    <p>He thinks, then nods. "Fine. But if it's boring, I'm out."</p>
+                    <p><strong>GAINED:</strong> Ajax joins... reluctantly.</p>
+                    <p><strong>[TO BE CONTINUED: Next recruit?]</strong></p>
+                `,
+                choices: [
+                    { text: "Head back to the hangout.", target: 'scene_4_hangout_build' }
+                ]
+            },
+
+            'scene_3_ajax_ego': {
+                text: `
+                    <p>You smile. "We see you, Ajax. Toughest guy in Coney. But wasting it on pinball? Join the Warriors—we'll make you a legend."</p>
+                    <p>His eyes light up. "Legend, huh? Yeah... I like the sound of that. Count me in."</p>
+                    <p><strong>GAINED:</strong> Ajax joins, pumped up.</p>
+                    <p><strong>[TO BE CONTINUED: Next recruit?]</strong></p>
+                `,
+                choices: [
+                    { text: "Head back to the hangout.", target: 'scene_4_hangout_build' }
+                ]
+            },
+
+            'scene_4_hangout_build': {
+                text: `
+                    <p>Back at the hangout, Ajax is already flexing and talking big. Vermin rolls his eyes, but the crew's growing. Next up: Scout for Swan or hit the streets for respect.</p>
+                    <p><strong>OBJECTIVE:</strong> Solidify the gang.</p>
+                    <p><strong>[TO BE CONTINUED...]</strong></p>
+                `,
+                choices: [
+                    { text: "Restart the game.", target: 'start' }
+                ]
+            }
+        };
+
+        // --- GAME ENGINE ---
+        
+        // Get the DOM elements
+        const storyOutput = document.getElementById('story-output');
+        const choicesContainer = document.getElementById('choices-container');
+
+        /**
+         * Displays a scene by its ID.
+         * @param {string} sceneKey - The key (ID) of the scene to display from gameData.
+         */
+        function displayScene(sceneKey) {
+            const scene = gameData[sceneKey];
+
+            if (!scene) {
+                console.error(`Scene not found: ${sceneKey}`);
+                return;
+            }
+
+            // 1. Update the story text
+            storyOutput.innerHTML = scene.text;
+
+            // 2. Clear old choices
+            choicesContainer.innerHTML = '';
+
+            // 3. Create and add new choice buttons
+            scene.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.innerText = choice.text;
+                
+                // Add an event listener to go to the target scene when clicked
+                button.addEventListener('click', () => {
+                    displayScene(choice.target);
+                });
+                
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        // --- START THE GAME ---
+        // Automatically display the 'start' scene when the page loads.
+        window.addEventListener('load', () => {
+            displayScene('start');
+        });
+    </script>
+
+</body>
+</html>
